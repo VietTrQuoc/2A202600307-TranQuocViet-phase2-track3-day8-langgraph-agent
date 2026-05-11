@@ -37,8 +37,11 @@ def route_after_evaluate(state: AgentState) -> str:
     This is the 'done?' check that enables retry loops — a key LangGraph advantage over LCEL.
     TODO(student): replace heuristic with LLM-as-judge or structured validation.
     """
-    if state.get("evaluation_result") == "needs_retry":
+    evaluation_result = state.get("evaluation_result")
+    if evaluation_result == "needs_retry":
         return "retry"
+    elif evaluation_result == "max_retries_exceeded":
+        return "dead_letter"
     return "answer"
 
 
@@ -48,4 +51,8 @@ def route_after_approval(state: AgentState) -> str:
     TODO(student): support reject/edit outcomes.
     """
     approval = state.get("approval") or {}
+    if approval.get("approved", False):
+        return "tool"
+    else:
+        return "clarify"  # Ask for clarification on rejection
     return "tool" if approval.get("approved") else "clarify"

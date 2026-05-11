@@ -57,6 +57,7 @@ class AgentState(TypedDict, total=False):
     proposed_action: str | None
     approval: dict[str, Any] | None
     evaluation_result: str | None
+    backoff_seconds: int
     messages: Annotated[list[str], add]
     tool_results: Annotated[list[str], add]
     errors: Annotated[list[str], add]
@@ -95,6 +96,7 @@ def initial_state(scenario: Scenario) -> AgentState:
         "proposed_action": None,
         "approval": None,
         "evaluation_result": None,
+        "backoff_seconds": 0,
         "messages": [],
         "tool_results": [],
         "errors": [],
